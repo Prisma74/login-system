@@ -50,7 +50,7 @@ app.post("/login", async (req, res) => {
   const token = jwt.sign(
     { id: data.id, email: data.email },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "1" }
   );
   res.json({ token });
 });
