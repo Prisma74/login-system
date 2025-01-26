@@ -3,6 +3,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { createCliente } = require("@supabase/supabase-js");
+const e = require("express");
 require("dotenv").config;
 
 const app = express();
@@ -34,10 +35,22 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const { data, error } = await supabase.from("users").selected("*").eq('email', email).single();
+  const { data, error } = await supabase
+    .from("users")
+    .selected("*")
+    .eq("email", email)
+    .single();
 
-  if(error) return res.status(400).json({ message: "User not found"});
+  if (error) return res.status(400).json({ message: "User not found" });
 
   const isPasswordValid = await bcrypt.compare(password, data.password);
-  
+  if (!isPasswordValid)
+    return res.status(400).json({ error: "Incorrect password" });
+
+  const token = jwt.sign(
+    { id: data.id, email: data.email },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  res.json({ token });
 });
