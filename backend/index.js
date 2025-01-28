@@ -2,18 +2,23 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { createCliente } = require("@supabase/supabase-js");
+const { createClient } = require("@supabase/supabase-js");
 const e = require("express");
-require("dotenv").config;
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 4000;
 
+console.log(process.env.SUPABASE_URL);
+console.log(process.env.SUPABASE_KEY);
+
+
 // Config supabase
-const supabase = createCliente(
+const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
+
 
 // Middleware
 app.use(cors());
@@ -37,7 +42,7 @@ app.post("/login", async (req, res) => {
 
   const { data, error } = await supabase
     .from("users")
-    .selected("*")
+    .select("*")
     .eq("email", email)
     .single();
 
@@ -60,13 +65,13 @@ app.get("/profile", verifyToken, async (req, res) => {
 
   const { data, error } = await supabase
     .from("users")
-    .selected("id, name, email")
+    .select("id, name, email")
     .eq("id", id)
     .single();
 
-    if(error) return res.status(400).json({ error: "User not found"});
+  if (error) return res.status(400).json({ error: "User not found" });
 
-    res.json(data);
+  res.json(data);
 });
 
 function verifyToken(req, res, next) {
@@ -84,3 +89,6 @@ function verifyToken(req, res, next) {
   });
 }
 
+app.listen(port, () => {
+  console.log(`The server is running in http://localhost:${port}`);
+});
