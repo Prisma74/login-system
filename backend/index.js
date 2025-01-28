@@ -9,9 +9,6 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 4000;
 
-console.log(process.env.SUPABASE_URL);
-console.log(process.env.SUPABASE_KEY);
-
 
 // Config supabase
 const supabase = createClient(
