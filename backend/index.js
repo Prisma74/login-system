@@ -54,3 +54,33 @@ app.post("/login", async (req, res) => {
   );
   res.json({ token });
 });
+
+app.get("/profile", verifyToken, async (req, res) => {
+  const { id } = req.user;
+
+  const { data, error } = await supabase
+    .from("users")
+    .selected("id, name, email")
+    .eq("id", id)
+    .single();
+
+    if(error) return res.status(400).json({ error: "User not found"});
+
+    res.json(data);
+});
+
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  if (!bearerHeader)
+    return res.status(403).json({ error: "No token provided" });
+
+  const token = bearerHeader.split(" ")[1];
+  if (!token) return res.status(403).json({ error: "No token provided" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: "Not valid token" });
+    req.user = user;
+    next();
+  });
+}
+
