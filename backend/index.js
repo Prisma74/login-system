@@ -66,7 +66,7 @@ app.get("/profile", verifyToken, async (req, res) => {
     .eq("id", id)
     .single();
 
-  if (error) return res.status(400).json({ error: "User not foun" });
+  if (error) return res.status(400).json({ error: "User not found" });
 
   res.json(data);
 });
