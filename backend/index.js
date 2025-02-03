@@ -74,7 +74,7 @@ app.get("/profile", verifyToken, async (req, res) => {
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers["authorization"];
   if (!bearerHeader)
-    return res.status(403).json({ error: "No token provide" });
+    return res.status(403).json({ error: "No token provided" });
 
   const token = bearerHeader.split(" ")[1];
   if (!token) return res.status(403).json({ error: "No token provided" });
